@@ -1,0 +1,29 @@
+{
+  "name": "military-hospital-platform",
+  "version": "1.0.0",
+  "description": "A web application for managing patient records and uploading medical files to AWS S3.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo No tests yet!"
+  },
+  "keywords": [
+    "military",
+    "hospital",
+    "platform",
+    "patient",
+    "records",
+    "management",
+    "medical",
+    "file",
+    "upload",
+    "AWS",
+    "S3",
+    "integration",
+    "healthcare",
+    "application",
+    "web",
+    "development"
+  ],
+  "author": "Luzuko",
+  "license": "MIT"
+}
