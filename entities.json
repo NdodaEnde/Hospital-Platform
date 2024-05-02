@@ -1,0 +1,396 @@
+[
+  {
+    "type": "NAME",
+    "text": "John Doe",
+    "score": 0.9958069324493408,
+    "attributes": []
+  },
+  {
+    "type": "DATE",
+    "text": "1990-01-01",
+    "score": 0.9971551895141602,
+    "attributes": []
+  },
+  {
+    "type": "ID",
+    "text": "123456",
+    "score": 0.6183781623840332,
+    "attributes": []
+  },
+  {
+    "type": "SYSTEM_ORGAN_SITE",
+    "text": "chest",
+    "score": 0.9986901879310608,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "chest pain",
+    "score": 0.9580551981925964,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "shortness of breath",
+    "score": 0.9975466132164001,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "Hypertension",
+    "score": 0.9987897276878357,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "Hyperlipidemia",
+    "score": 0.9984015822410583,
+    "attributes": []
+  },
+  {
+    "type": "SYSTEM_ORGAN_SITE",
+    "text": "cardiovascular",
+    "score": 0.8489643335342407,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "cardiovascular disease",
+    "score": 0.9917876720428467,
+    "attributes": []
+  },
+  {
+    "type": "TREATMENT_NAME",
+    "text": "Medications",
+    "score": 0.6684927344322205,
+    "attributes": []
+  },
+  {
+    "type": "GENERIC_NAME",
+    "text": "Lisinopril",
+    "score": 0.99849534034729,
+    "attributes": [
+      {
+        "Type": "DOSAGE",
+        "Score": 0.9873505234718323,
+        "RelationshipScore": 0.9999933242797852,
+        "RelationshipType": "DOSAGE",
+        "Id": 2,
+        "BeginOffset": 276,
+        "EndOffset": 280,
+        "Text": "20mg",
+        "Category": "MEDICATION",
+        "Traits": []
+      },
+      {
+        "Type": "FREQUENCY",
+        "Score": 0.9978122711181641,
+        "RelationshipScore": 0.9996507167816162,
+        "RelationshipType": "FREQUENCY",
+        "Id": 3,
+        "BeginOffset": 281,
+        "EndOffset": 286,
+        "Text": "daily",
+        "Category": "MEDICATION",
+        "Traits": []
+      }
+    ]
+  },
+  {
+    "type": "GENERIC_NAME",
+    "text": "Atorvastatin",
+    "score": 0.9972794651985168,
+    "attributes": [
+      {
+        "Type": "DOSAGE",
+        "Score": 0.9874324798583984,
+        "RelationshipScore": 0.9998685121536255,
+        "RelationshipType": "DOSAGE",
+        "Id": 5,
+        "BeginOffset": 300,
+        "EndOffset": 304,
+        "Text": "40mg",
+        "Category": "MEDICATION",
+        "Traits": []
+      },
+      {
+        "Type": "FREQUENCY",
+        "Score": 0.9975661039352417,
+        "RelationshipScore": 0.9998749494552612,
+        "RelationshipType": "FREQUENCY",
+        "Id": 6,
+        "BeginOffset": 305,
+        "EndOffset": 310,
+        "Text": "daily",
+        "Category": "MEDICATION",
+        "Traits": []
+      }
+    ]
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "Lab",
+    "score": 0.5752031207084656,
+    "attributes": []
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "Complete Blood Count",
+    "score": 0.975172221660614,
+    "attributes": [
+      {
+        "Type": "TEST_VALUE",
+        "Score": 0.9679238796234131,
+        "RelationshipScore": 0.9746628999710083,
+        "RelationshipType": "TEST_VALUE",
+        "Id": 36,
+        "BeginOffset": 352,
+        "EndOffset": 372,
+        "Text": "within normal limits",
+        "Category": "TEST_TREATMENT_PROCEDURE",
+        "Traits": []
+      }
+    ]
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "CBC",
+    "score": 0.742662787437439,
+    "attributes": [
+      {
+        "Type": "TEST_VALUE",
+        "Score": 0.9679238796234131,
+        "RelationshipScore": 0.9824955463409424,
+        "RelationshipType": "TEST_VALUE",
+        "Id": 36,
+        "BeginOffset": 352,
+        "EndOffset": 372,
+        "Text": "within normal limits",
+        "Category": "TEST_TREATMENT_PROCEDURE",
+        "Traits": []
+      }
+    ]
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "Basic Metabolic Panel",
+    "score": 0.794948160648346,
+    "attributes": [
+      {
+        "Type": "TEST_VALUE",
+        "Score": 0.9716452360153198,
+        "RelationshipScore": 0.9601998925209045,
+        "RelationshipType": "TEST_VALUE",
+        "Id": 39,
+        "BeginOffset": 402,
+        "EndOffset": 422,
+        "Text": "within normal limits",
+        "Category": "TEST_TREATMENT_PROCEDURE",
+        "Traits": []
+      }
+    ]
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "BMP",
+    "score": 0.8127692937850952,
+    "attributes": [
+      {
+        "Type": "TEST_VALUE",
+        "Score": 0.9716452360153198,
+        "RelationshipScore": 0.9951004385948181,
+        "RelationshipType": "TEST_VALUE",
+        "Id": 39,
+        "BeginOffset": 402,
+        "EndOffset": 422,
+        "Text": "within normal limits",
+        "Category": "TEST_TREATMENT_PROCEDURE",
+        "Traits": []
+      }
+    ]
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "Lipid Profile",
+    "score": 0.9896676540374756,
+    "attributes": [
+      {
+        "Type": "TEST_VALUE",
+        "Score": 0.9659984707832336,
+        "RelationshipScore": 0.9999980926513672,
+        "RelationshipType": "TEST_VALUE",
+        "Id": 41,
+        "BeginOffset": 438,
+        "EndOffset": 446,
+        "Text": "elevated",
+        "Category": "TEST_TREATMENT_PROCEDURE",
+        "Traits": []
+      }
+    ]
+  },
+  {
+    "type": "DX_NAME",
+    "text": "elevated LDL cholesterol",
+    "score": 0.7843023538589478,
+    "attributes": []
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "LDL cholesterol",
+    "score": 0.889498233795166,
+    "attributes": []
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "Imaging Studies",
+    "score": 0.9690148830413818,
+    "attributes": []
+  },
+  {
+    "type": "SYSTEM_ORGAN_SITE",
+    "text": "Chest",
+    "score": 0.9981693029403687,
+    "attributes": []
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "Chest X-ray",
+    "score": 0.9892268180847168,
+    "attributes": [
+      {
+        "Type": "TEST_VALUE",
+        "Score": 0.7232646346092224,
+        "RelationshipScore": 0.9984266757965088,
+        "RelationshipType": "TEST_VALUE",
+        "Id": 45,
+        "BeginOffset": 493,
+        "EndOffset": 525,
+        "Text": "cardiomegaly and pulmonary edema",
+        "Category": "TEST_TREATMENT_PROCEDURE",
+        "Traits": []
+      }
+    ]
+  },
+  {
+    "type": "DX_NAME",
+    "text": "cardiomegaly",
+    "score": 0.9864018559455872,
+    "attributes": [
+      {
+        "Type": "SYSTEM_ORGAN_SITE",
+        "Score": 0.9981693029403687,
+        "RelationshipScore": 0.8737486004829407,
+        "RelationshipType": "SYSTEM_ORGAN_SITE",
+        "Id": 12,
+        "BeginOffset": 480,
+        "EndOffset": 485,
+        "Text": "Chest",
+        "Category": "ANATOMY",
+        "Traits": []
+      }
+    ]
+  },
+  {
+    "type": "SYSTEM_ORGAN_SITE",
+    "text": "pulmonary",
+    "score": 0.9784042239189148,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "pulmonary edema",
+    "score": 0.9661093950271606,
+    "attributes": []
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "Electrocardiogram",
+    "score": 0.9333444833755493,
+    "attributes": []
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "ECG",
+    "score": 0.9442585706710815,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "sinus rhythm",
+    "score": 0.9866894483566284,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "ST elevation",
+    "score": 0.8260359764099121,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "Acute myocardial infarction",
+    "score": 0.8422846794128418,
+    "attributes": []
+  },
+  {
+    "type": "SYSTEM_ORGAN_SITE",
+    "text": "myocardial",
+    "score": 0.9801586270332336,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "STEMI",
+    "score": 0.8811827898025513,
+    "attributes": []
+  },
+  {
+    "type": "DX_NAME",
+    "text": "cardiogenic shock",
+    "score": 0.7750602960586548,
+    "attributes": []
+  },
+  {
+    "type": "GENERIC_NAME",
+    "text": "aspirin",
+    "score": 0.9939139485359192,
+    "attributes": [
+      {
+        "Type": "DOSAGE",
+        "Score": 0.9735220670700073,
+        "RelationshipScore": 0.9998399019241333,
+        "RelationshipType": "DOSAGE",
+        "Id": 8,
+        "BeginOffset": 705,
+        "EndOffset": 710,
+        "Text": "325mg",
+        "Category": "MEDICATION",
+        "Traits": []
+      },
+      {
+        "Type": "ROUTE_OR_MODE",
+        "Score": 0.9978304505348206,
+        "RelationshipScore": 0.9879159927368164,
+        "RelationshipType": "ROUTE_OR_MODE",
+        "Id": 9,
+        "BeginOffset": 711,
+        "EndOffset": 713,
+        "Text": "PO",
+        "Category": "MEDICATION",
+        "Traits": []
+      }
+    ]
+  },
+  {
+    "type": "SYSTEM_ORGAN_SITE",
+    "text": "cardiac",
+    "score": 0.8843340277671814,
+    "attributes": []
+  },
+  {
+    "type": "TEST_NAME",
+    "text": "cardiac catheterization lab",
+    "score": 0.3742532730102539,
+    "attributes": []
+  }
+]

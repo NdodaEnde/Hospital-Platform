@@ -11,6 +11,8 @@ import os
 from pathlib import Path
 from flask_cors import CORS
 from flask import render_template
+import json
+from pathlib import Path
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -52,6 +54,8 @@ def get_patients():
     except Exception as e:
         logging.error(f"Error retrieving patients: {str(e)}")
         return jsonify({'error': str(e)}), 500
+
+@app.route('/upload', methods=['POST'])
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -115,6 +119,11 @@ def upload_file():
                     'attributes': entity.get('Attributes', [])
                 }
                 entities.append(entity_data)
+
+            # Save entities to a JSON file
+            entities_file = project_dir / 'entities.json'
+            with open(entities_file, 'w') as f:
+                json.dump(entities, f, indent=2)
 
             # Return the extracted text and entities
             return jsonify({'text': text, 'entities': entities})
