@@ -54,7 +54,85 @@ def get_patients():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/upload', methods=['POST'])
+def upload_file():
+    logging.debug("upload_file function called")
 
+    file = request.files.get('file')
+    if not file:
+        logging.error("No file provided")
+        return jsonify({'error': 'No file provided'}), 400
+
+    if file.filename == '':
+        logging.error("No file selected")
+        return jsonify({'error': 'No file selected'}), 400
+
+    logging.debug(f"Received file: {file.filename}")
+
+    # Get the project directory path
+    project_dir = Path(__file__).resolve().parent
+    logging.debug(f"Project directory: {project_dir}")
+
+    # Save the file to a temporary location in the project directory
+    try:
+        with tempfile.NamedTemporaryFile(dir=str(project_dir), delete=False) as temp_file:
+            file.save(temp_file.name)
+            temp_filename = temp_file.name
+            logging.debug(f"Temporary file created: {temp_filename}")
+
+            # Inspect the uploaded file
+            with open(temp_filename, 'rb') as temp_file:
+                file_contents = temp_file.read()
+                logging.debug(f"File contents (truncated): {file_contents[:50]}...")
+
+        try:
+            # Extract text from the PDF file using Amazon Textract
+            logging.debug(f"Calling Textract with file: {temp_filename}")
+            with open(temp_filename, 'rb') as file:
+                response = textract.detect_document_text(
+                    Document={'Bytes': file.read()}
+                )
+            logging.debug(f"Textract response: {response}")
+
+            text = ''
+            for item in response['Blocks']:
+                if item['BlockType'] == 'LINE':
+                    text += item['Text'] + '\n'
+
+            # Analyze the extracted text using Comprehend Medical
+            logging.debug("Calling Comprehend Medical...")
+            medical_response = comprehend_medical.detect_entities(
+                Text=text
+            )
+            logging.debug(f"Comprehend Medical response: {medical_response}")
+
+            # Parse the Comprehend Medical response
+            entities = []
+            for entity in medical_response['Entities']:
+                entity_data = {
+                    'type': entity['Type'],
+                    'text': entity['Text'],
+                    'score': entity['Score'],
+                    'attributes': entity.get('Attributes', [])
+                }
+                entities.append(entity_data)
+
+            # Return the extracted text and entities
+            return jsonify({'text': text, 'entities': entities})
+
+        except Exception as e:
+            logging.error(f"Error processing file: {str(e)}")
+            return jsonify({'error': str(e)}), 500
+
+    except Exception as e:
+        logging.error(f"Error creating temporary file: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+    finally:
+        # Remove the temporary file
+        os.unlink(temp_filename)
+        logging.debug(f"Temporary file removed: {temp_filename}")
+
+'''
 @app.route('/upload', methods=['POST'])
 def upload_file():
     logging.debug("upload_file function called")
@@ -108,7 +186,7 @@ def upload_file():
             logging.debug(f"Comprehend Medical response: {medical_response}")
 
             # Return the extracted text
-            return {'text': text}
+            return jsonify({'text': text})
 
         except Exception as e:
             logging.error(f"Error processing file: {str(e)}")
@@ -122,7 +200,7 @@ def upload_file():
         # Remove the temporary file
         os.unlink(temp_filename)
         logging.debug(f"Temporary file removed: {temp_filename}")
-
+'''
 
 '''
 def upload_file():

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Military Hospital Platform</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .entity {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .entity-type {
+            font-weight: bold;
+            display: block;
+        }
+        .entity-text {
+            display: block;
+        }
+        .entity-score {
+            display: block;
+            font-style: italic;
+        }
+        .entity-attributes {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -22,11 +43,15 @@
         </section>
         <section>
             <!-- Display extracted text -->
+            <h2>Extracted Text</h2>
             <div id="extracted-text"></div>
+        </section>
+        <section>
+            <!-- Display extracted entities -->
+            <h2>Extracted Entities</h2>
+            <div id="entities"></div>
         </section>
     </main>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
-
-
