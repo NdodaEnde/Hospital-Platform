@@ -50,16 +50,21 @@ document.addEventListener('DOMContentLoaded', () => {
         scoreElement.classList.add('entity-score');
         scoreElement.textContent = `Score: ${entity.score.toFixed(2)}`;
 
+        const categoryElement = document.createElement('span');
+        categoryElement.classList.add('entity-category');
+        categoryElement.textContent = `Category: ${entity.category}`;
+
         entityElement.appendChild(typeElement);
         entityElement.appendChild(textElement);
         entityElement.appendChild(scoreElement);
+        entityElement.appendChild(categoryElement);
 
         if (entity.attributes.length > 0) {
           const attributesElement = document.createElement('ul');
           attributesElement.classList.add('entity-attributes');
           entity.attributes.forEach(attribute => {
             const attributeItem = document.createElement('li');
-            attributeItem.textContent = attribute;
+            attributeItem.textContent = `Type: ${attribute.Type}, Score: ${attribute.Score}, Text: ${attribute.Text}`;
             attributesElement.appendChild(attributeItem);
           });
           entityElement.appendChild(attributesElement);

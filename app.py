@@ -116,6 +116,7 @@ def upload_file():
                     'type': entity['Type'],
                     'text': entity['Text'],
                     'score': entity['Score'],
+                    'category': entity['Category'],
                     'attributes': entity.get('Attributes', [])
                 }
                 entities.append(entity_data)
