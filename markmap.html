@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Markmap</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+#mindmap {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.17.0/dist/style.css">
+</head>
+<body>
+<svg id="mindmap"></svg>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/markmap-view@0.17.0/dist/browser/index.js"></script><script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.17.0/dist/index.js"></script><script>(()=>{setTimeout(()=>{const{markmap:O,mm:h}=window,M=new O.Toolbar;M.attach(h);const oe=M.render();oe.setAttribute("style","position:absolute;bottom:20px;right:20px"),document.body.append(oe)})})()</script><script>((i,L,f,r)=>{const w=i();window.mm=w.Markmap.create("svg#mindmap",(L||w.deriveOptions)(r),f)})(()=>window.markmap,null,{"content":"Patient Record Processing Workflow","children":[{"content":"1. Scan Patient File Record","children":[{"content":"<strong>Action:</strong> Scan physical patient records into digital format.","children":[],"payload":{"lines":"3,5"}}],"payload":{"lines":"2,3"}},{"content":"2. Upload Scanned Document","children":[{"content":"<strong>Platform:</strong> Web application.","children":[],"payload":{"lines":"6,7"}},{"content":"<strong>Action:</strong> Users upload the scanned documents through the web app interface.","children":[],"payload":{"lines":"7,9"}}],"payload":{"lines":"5,6"}},{"content":"3. Extract and Analyze Data","children":[{"content":"<strong>Tools:</strong>","children":[{"content":"<strong>Amazon Textract:</strong> Extracts text and data from scanned documents.","children":[],"payload":{"lines":"11,12"}},{"content":"<strong>Amazon Comprehend Medical:</strong> Analyzes extracted text for medical information (e.g., conditions, medications, dosages).","children":[],"payload":{"lines":"12,14"}}],"payload":{"lines":"10,14"}}],"payload":{"lines":"9,10"}},{"content":"4. Parse Data into Structured Format","children":[{"content":"<strong>Action:</strong> Convert extracted and analyzed data into a structured format suitable for further processing.","children":[],"payload":{"lines":"15,17"}}],"payload":{"lines":"14,15"}},{"content":"5. Input Data to OpenSearch API","children":[{"content":"<strong>Functionality:</strong> Use the structured data to query or index in OpenSearch for easy retrieval and management.","children":[],"payload":{"lines":"18,20"}}],"payload":{"lines":"17,18"}},{"content":"6. Output to EHR System","children":[{"content":"<strong>Existing EHR System:</strong> Send structured data to an existing EHR (Electronic Health Records) system for integration and use.","children":[],"payload":{"lines":"21,22"}},{"content":"<strong>No EHR System:</strong>","children":[{"content":"<strong>Create Patient Record View/Manage Interface:</strong> Develop a custom interface for viewing and managing patient records if no EHR system exists.","children":[],"payload":{"lines":"23,25"}}],"payload":{"lines":"22,25"}}],"payload":{"lines":"20,21"}},{"content":"7. Advanced Analytics","children":[{"content":"<strong>Tools:</strong>","children":[{"content":"<strong>Amazon QuickSight</strong>","children":[],"payload":{"lines":"27,28"}},{"content":"<strong>Power BI API</strong>","children":[],"payload":{"lines":"28,29"}}],"payload":{"lines":"26,29"}},{"content":"<strong>Purpose:</strong> Use structured data for generating advanced analytics and insights, potentially through dashboards or reports.","children":[],"payload":{"lines":"29,30"}}],"payload":{"lines":"25,26"}}],"payload":{"lines":"0,1"}},null)</script>
+</body>
+</html>

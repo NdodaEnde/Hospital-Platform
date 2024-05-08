@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 import requests
 from requests_aws4auth import AWS4Auth
+from opensearchpy import OpenSearch, RequestsHttpConnection
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -40,8 +41,6 @@ OPENSEARCH_HOST = os.environ.get('OPENSEARCH_HOST')
 OPENSEARCH_INDEX = os.environ.get('OPENSEARCH_INDEX')
 OPENSEARCH_REGION = os.environ.get('OPENSEARCH_REGION')
 OPENSEARCH_SERVICE = os.environ.get('OPENSEARCH_SERVICE')
-
-
 
 # Create an AWS4Auth instance for signing requests
 credentials = boto3.Session().get_credentials()
@@ -165,6 +164,57 @@ def upload_file():
         # Remove the temporary file
         os.unlink(temp_filename)
         logging.debug(f"Temporary file removed: {temp_filename}")
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('q')
+    if not query:
+        return jsonify({'error': 'No search query provided'}), 400
+
+    try:
+        # Create an OpenSearch client
+        client = OpenSearch(
+            hosts=[OPENSEARCH_HOST],
+            http_auth=aws4auth,
+            use_ssl=True,
+            verify_certs=True,
+            connection_class=RequestsHttpConnection
+        )
+
+        # Perform the search
+        search_response = client.search(
+            index=OPENSEARCH_INDEX,
+            body={
+                'query': {
+                    'multi_match': {
+                        'query': query,
+                        'fields': ['text', 'type', 'category']
+                    }
+                }
+            }
+        )
+
+        # Parse the search results
+        search_results = []
+        for hit in search_response['hits']['hits']:
+            result = {
+                'text': hit['_source']['text'],
+                'score': hit['_score']
+            }
+            search_results.append(result)
+
+        return jsonify({'results': search_results})
+
+    except Exception as e:
+        logging.error(f"Error performing search: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+# Create tables based on models within the application context
+with app.app_context():
+    db.create_all()
+
+if __name__ == '__main__':
+    app.run()
 """
 if __name__ == '__main__':
     app.run(debug=True)

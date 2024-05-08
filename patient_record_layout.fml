@@ -1,0 +1,396 @@
+// Create a new frame
+frame "Patient Record" {
+  // Set the frame properties
+  layout.fillParent
+  primaryAxisSizingMode.fixed
+  counterAxisSizingMode.fixed
+  width 800
+  height 600
+  backgroundColor #FFFFFF
+  
+  // Add a header
+  frame "Header" {
+    layout.fillParent
+    primaryAxisSizingMode.fixed
+    counterAxisSizingMode.fixed
+    height 80
+    backgroundColor #333333
+    
+    // Add a title
+    text "Military Hospital Platform" {
+      fontFamily "Arial"
+      fontSize 24
+      fontWeight bold
+      fill #FFFFFF
+      x Alignment.center
+      y Alignment.center
+    }
+  }
+  
+  // Add a main content area
+  frame "Main" {
+    layout.fillParent
+    primaryAxisSizingMode.fixed
+    counterAxisSizingMode.fixed
+    paddingTop 20
+    paddingBottom 20
+    paddingLeft 20
+    paddingRight 20
+    
+    // Add a section for uploading patient files
+    frame "Upload Section" {
+      layout.fillParent
+      primaryAxisSizingMode.fixed
+      counterAxisSizingMode.fixed
+      height 60
+      
+      // Add an input field for file upload
+      rectangle "File Input" {
+        width 200
+        height 40
+        fill #F1F1F1
+        strokeWidth 1
+        stroke #CCCCCC
+      }
+      
+      // Add an upload button
+      rectangle "Upload Button" {
+        width 100
+        height 40
+        fill #333333
+        strokeWidth 0
+        cornerRadius 5
+        
+        // Add button text
+        text "Upload" {
+          fontFamily "Arial"
+          fontSize 16
+          fontWeight bold
+          fill #FFFFFF
+          x Alignment.center
+          y Alignment.center
+        }
+      }
+    }
+    
+    // Add a section for search
+    frame "Search Section" {
+      layout.fillParent
+      primaryAxisSizingMode.fixed
+      counterAxisSizingMode.fixed
+      height 60
+      
+      // Add a search input field
+      rectangle "Search Input" {
+        width 300
+        height 40
+        fill #F1F1F1
+        strokeWidth 1
+        stroke #CCCCCC
+      }
+      
+      // Add a search button
+      rectangle "Search Button" {
+        width 100
+        height 40
+        fill #333333
+        strokeWidth 0
+        cornerRadius 5
+        
+        // Add button text
+        text "Search" {
+          fontFamily "Arial"
+          fontSize 16
+          fontWeight bold
+          fill #FFFFFF
+          x Alignment.center
+          y Alignment.center
+        }
+      }
+    }
+    
+    // Add a section for patient record
+    frame "Patient Record Section" {
+      layout.fillParent
+      primaryAxisSizingMode.fixed
+      counterAxisSizingMode.fixed
+      
+      // Add a title
+      text "Patient Record" {
+        fontFamily "Arial"
+        fontSize 20
+        fontWeight bold
+        fill #333333
+        x Alignment.center
+        y 20
+      }
+      
+      // Add patient information
+      frame "Patient Information" {
+        layout.fillParent
+        primaryAxisSizingMode.fixed
+        counterAxisSizingMode.fixed
+        height 100
+        
+        // Add patient name
+        text "Patient Name" {
+          fontFamily "Arial"
+          fontSize 16
+          fontWeight bold
+          fill #333333
+          x 20
+          y 20
+        }
+        
+        // Add date of birth
+        text "Date of Birth: " {
+          fontFamily "Arial"
+          fontSize 14
+          fill #666666
+          x 20
+          y 50
+        }
+        
+        // Add gender
+        text "Gender: " {
+          fontFamily "Arial"
+          fontSize 14
+          fill #666666
+          x 20
+          y 70
+        }
+      }
+      
+      // Add accordion sections
+      frame "Accordion Sections" {
+        layout.fillParent
+        primaryAxisSizingMode.fixed
+        counterAxisSizingMode.fixed
+        
+        // Add Medical History section
+        frame "Medical History" {
+          layout.fillParent
+          primaryAxisSizingMode.fixed
+          counterAxisSizingMode.fixed
+          
+          // Add section header
+          frame "Section Header" {
+            layout.fillParent
+            primaryAxisSizingMode.fixed
+            counterAxisSizingMode.fixed
+            height 40
+            backgroundColor #F1F1F1
+            
+            // Add section title
+            text "Medical History" {
+              fontFamily "Arial"
+              fontSize 16
+              fontWeight bold
+              fill #333333
+              x 20
+              y Alignment.center
+            }
+            
+            // Add search input
+            rectangle "Search Input" {
+              width 200
+              height 30
+              fill #FFFFFF
+              strokeWidth 1
+              stroke #CCCCCC
+              x Alignment.right
+              y Alignment.center
+              marginRight 20
+            }
+          }
+          
+          // Add section content
+          frame "Section Content" {
+            layout.fillParent
+            primaryAxisSizingMode.fixed
+            counterAxisSizingMode.fixed
+            paddingTop 10
+            paddingBottom 10
+            paddingLeft 20
+            paddingRight 20
+            
+            // Add content placeholder
+            text "Medical History content goes here" {
+              fontFamily "Arial"
+              fontSize 14
+              fill #666666
+            }
+          }
+        }
+        
+        // Add Vitals & Measurements section
+        frame "Vitals & Measurements" {
+          layout.fillParent
+          primaryAxisSizingMode.fixed
+          counterAxisSizingMode.fixed
+          
+          // Add section header
+          frame "Section Header" {
+            layout.fillParent
+            primaryAxisSizingMode.fixed
+            counterAxisSizingMode.fixed
+            height 40
+            backgroundColor #F1F1F1
+            
+            // Add section title
+            text "Vitals & Measurements" {
+              fontFamily "Arial"
+              fontSize 16
+              fontWeight bold
+              fill #333333
+              x 20
+              y Alignment.center
+            }
+            
+            // Add search input
+            rectangle "Search Input" {
+              width 200
+              height 30
+              fill #FFFFFF
+              strokeWidth 1
+              stroke #CCCCCC
+              x Alignment.right
+              y Alignment.center
+              marginRight 20
+            }
+          }
+          
+          // Add section content
+          frame "Section Content" {
+            layout.fillParent
+            primaryAxisSizingMode.fixed
+            counterAxisSizingMode.fixed
+            paddingTop 10
+            paddingBottom 10
+            paddingLeft 20
+            paddingRight 20
+            
+            // Add content placeholder
+            text "Vitals & Measurements content goes here" {
+              fontFamily "Arial"
+              fontSize 14
+              fill #666666
+            }
+          }
+        }
+        
+        // Add Appointments & Visits section
+        frame "Appointments & Visits" {
+          layout.fillParent
+          primaryAxisSizingMode.fixed
+          counterAxisSizingMode.fixed
+          
+          // Add section header
+          frame "Section Header" {
+            layout.fillParent
+            primaryAxisSizingMode.fixed
+            counterAxisSizingMode.fixed
+            height 40
+            backgroundColor #F1F1F1
+            
+            // Add section title
+            text "Appointments & Visits" {
+              fontFamily "Arial"
+              fontSize 16
+              fontWeight bold
+              fill #333333
+              x 20
+              y Alignment.center
+            }
+            
+            // Add search input
+            rectangle "Search Input" {
+              width 200
+              height 30
+              fill #FFFFFF
+              strokeWidth 1
+              stroke #CCCCCC
+              x Alignment.right
+              y Alignment.center
+              marginRight 20
+            }
+          }
+          
+          // Add section content
+          frame "Section Content" {
+            layout.fillParent
+            primaryAxisSizingMode.fixed
+            counterAxisSizingMode.fixed
+            paddingTop 10
+            paddingBottom 10
+            paddingLeft 20
+            paddingRight 20
+            
+            // Add content placeholder
+            text "Appointments & Visits content goes here" {
+              fontFamily "Arial"
+              fontSize 14
+              fill #666666
+            }
+          }
+        }
+        
+        // Add Documents section
+        frame "Documents" {
+          layout.fillParent
+          primaryAxisSizingMode.fixed
+          counterAxisSizingMode.fixed
+          
+          // Add section header
+          frame "Section Header" {
+            layout.fillParent
+            primaryAxisSizingMode.fixed
+            counterAxisSizingMode.fixed
+            height 40
+            backgroundColor #F1F1F1
+            
+            // Add section title
+            text "Documents" {
+              fontFamily "Arial"
+              fontSize 16
+              fontWeight bold
+              fill #333333
+              x 20
+              y Alignment.center
+            }
+            
+            // Add search input
+            rectangle "Search Input" {
+              width 200
+              height 30
+              fill #FFFFFF
+              strokeWidth 1
+              stroke #CCCCCC
+              x Alignment.right
+              y Alignment.center
+              marginRight 20
+            }
+          }
+          
+          // Add section content
+          frame "Section Content" {
+            layout.fillParent
+            primaryAxisSizingMode.fixed
+            counterAxisSizingMode.fixed
+            paddingTop 10
+            paddingBottom 10
+            paddingLeft 20
+            paddingRight 20
+            
+            // Add content placeholder
+            text "Documents content goes here" {
+              fontFamily "Arial"
+              fontSize 14
+              fill #666666
+            }
+          }
+        }
+      }
+    }
+  }
+}

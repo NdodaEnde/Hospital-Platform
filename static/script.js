@@ -77,4 +77,37 @@ document.addEventListener('DOMContentLoaded', () => {
       alert('An error occurred while processing the file.');
     }
   });
+  // Search and query functionality
+const searchForm = document.getElementById('search-form');
+const searchInput = document.getElementById('search-input');
+const searchResultsContainer = document.getElementById('search-results');
+
+searchForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const query = searchInput.value;
+
+    try {
+        const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+        if (!response.ok) {
+            throw new Error('Failed to perform search.');
+        }
+
+        const data = await response.json();
+        const searchResults = data.results;
+
+        // Clear previous search results
+        searchResultsContainer.innerHTML = '';
+
+        // Render search results
+        searchResults.forEach(result => {
+            const resultElement = document.createElement('div');
+            resultElement.classList.add('search-result');
+            resultElement.textContent = `${result.text} (Score: ${result.score.toFixed(2)})`;
+            searchResultsContainer.appendChild(resultElement);
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while performing the search.');
+    }
+});
 });
