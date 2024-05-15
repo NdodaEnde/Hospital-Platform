@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Military Hospital Platform</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        .entity {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .entity-type {
+            font-weight: bold;
+            display: block;
+        }
+        .entity-text {
+            display: block;
+        }
+        .entity-score {
+            display: block;
+            font-style: italic;
+        }
+        .entity-attributes {
+            list-style-type: none;
+            padding: 0;
+        }
+        .entity-category {
+            font-weight: bold;
+            color: #666;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Military Hospital Platform</h1>
+        <nav>
+            <!-- Navigation elements will go here -->
+        </nav>
+    </header>
+    <main>
+        <section>
+            <!-- Upload patient files interface will go here -->
+            <input type="file" id="file-input">
+            <button id="upload-btn">Upload</button>
+        </section>
+        <section>
+            <!-- Display extracted text -->
+            <h2>Extracted Text</h2>
+            <div id="extracted-text"></div>
+        </section>
+        <section>
+            <!-- Display extracted entities -->
+            <h2>Extracted Entities</h2>
+            <div id="entities"></div>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

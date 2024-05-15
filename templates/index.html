@@ -5,66 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Military Hospital Platform</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        .entity {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        .entity-type {
-            font-weight: bold;
-            display: block;
-        }
-        .entity-text {
-            display: block;
-        }
-        .entity-score {
-            display: block;
-            font-style: italic;
-        }
-        .entity-attributes {
-            list-style-type: none;
-            padding: 0;
-        }
-        .entity-category {
-            font-weight: bold;
-            color: #666;
-            margin-left: 10px;
-        }
-    </style>
 </head>
 <body>
     <header>
         <h1>Military Hospital Platform</h1>
         <nav>
-            <!-- Navigation elements will go here -->
+            <ul>
+                <li><a href="#digitisation">Digitisation</a></li>
+                <li><a href="#patient-management">Patient Profile/Management</a></li>
+                <li><a href="#analytics-dashboard">Analytics/Dashboard</a></li>
+            </ul>
         </nav>
     </header>
     <main>
-        <section>
+        <section id="digitisation">
+            <h2>Digitisation</h2>
             <!-- Upload patient files interface will go here -->
             <input type="file" id="file-input">
             <button id="upload-btn">Upload</button>
-        </section>
-        <section>
-            <h2>Search</h2>
+            
+            <h3>Search</h3>
             <form id="search-form">
                 <input type="text" id="search-input" placeholder="Enter search query">
                 <button type="submit">Search</button>
             </form>
             <div id="search-results"></div>
-        </section>
-        <section>
-            <!-- Display extracted text -->
-            <h2>Extracted Text</h2>
+            
+            <h3>Extracted Text</h3>
             <div id="extracted-text"></div>
-        </section>
-        <section>
-            <!-- Display extracted entities -->
-            <h2>Extracted Entities</h2>
+            
+            <h3>Extracted Entities</h3>
             <div id="entities"></div>
+        </section>
+        
+        <section id="patient-management">
+            <h2>Patient Profile/Management</h2>
+            <div class="patient-info">
+              <h3 id="patient-name"></h3>
+              <p><strong>Date of Birth:</strong> <span id="patient-dob"></span></p>
+              <p><strong>Gender:</strong> <span id="patient-gender"></span></p>
+              <p><strong>Unique Patient ID:</strong> <span id="patient-id"></span></p>
+            </div>
+            <div class="medical-history">
+              <h4>Medical History</h4>
+              <ul>
+                <li><strong>Conditions:</strong>
+                  <ul id="patient-conditions"></ul>
+                </li>
+                <li><strong>Surgeries:</strong> <span id="patient-surgeries"></span></li>
+                <li><strong>Allergies:</strong> <span id="patient-allergies"></span></li>
+                <li><strong>Medications:</strong>
+                  <ul id="patient-medications"></ul>
+                </li>
+                <li><strong>Family History:</strong> <span id="patient-family-history"></span></li>
+              </ul>
+            </div>
+            <div class="vitals-measurements">
+              <h4>Vitals & Measurements</h4>
+              <ul>
+                <li><strong>Blood Pressure:</strong> <span id="patient-blood-pressure"></span></li>
+                <li><strong>Heart Rate:</strong> <span id="patient-heart-rate"></span></li>
+                <li><strong>Body Temperature:</strong> <span id="patient-temperature"></span></li>
+                <li><strong>Height:</strong> <span id="patient-height"></span></li>
+                <li><strong>Weight:</strong> <span id="patient-weight"></span></li>
+                <li><strong>BMI:</strong> <span id="patient-bmi"></span></li>
+              </ul>
+            </div>
+            <div class="documents">
+              <h4>Documents</h4>
+              <ul id="patient-documents"></ul>
+            </div>
+            <div class="appointments-visits">
+              <h4>Appointments & Visits</h4>
+              <ul>
+                <li><strong>Upcoming Appointments:</strong> <span id="patient-upcoming-appointments"></span></li>
+                <li><strong>Past Visits:</strong> <span id="patient-past-visits"></span></li>
+              </ul>
+            </div>
+          </section>
+        
+        <section id="analytics-dashboard">
+            <h2>Analytics/Dashboard</h2>
+            <!-- QuickSight API integration will go here -->
+            <div id="quicksight-dashboard"></div>
         </section>
     </main>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
-</html>
+</html> 

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Profile</title>
+</head>
+<body>
+    <h1>Patient Profile</h1>
+    <p><strong>Name:</strong> {{ patient.name }}</p>
+    <p><strong>Date of Birth:</strong> {{ patient.date_of_birth }}</p>
+    <p><strong>Gender:</strong> {{ patient.gender }}</p>
+    <p><strong>Unique ID:</strong> {{ patient.unique_id }}</p>
+    <!-- Display other patient information as needed -->
+
+    <h2>Extracted Entities</h2>
+    <ul>
+        {% for entity in patient.entities %}
+            <li>
+                <strong>Type:</strong> {{ entity.type }}<br>
+                <strong>Text:</strong> {{ entity.text }}<br>
+                <strong>Score:</strong> {{ entity.score }}<br>
+                <strong>Category:</strong> {{ entity.category }}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
