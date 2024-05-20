@@ -19,6 +19,7 @@ from requests_aws4auth import AWS4Auth
 from opensearchpy import OpenSearch, RequestsHttpConnection
 from flask_migrate import Migrate
 import uuid
+from botocore.exceptions import ClientError
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -50,6 +51,8 @@ OPENSEARCH_SERVICE = os.environ.get('OPENSEARCH_SERVICE')
 credentials = boto3.Session().get_credentials()
 aws4auth = AWS4Auth(credentials.access_key, credentials.secret_key, OPENSEARCH_REGION, OPENSEARCH_SERVICE)
 
+AWS_ACCOUNT_ID = os.environ.get('AWS_ACCOUNT_ID')
+
 # Create an OpenSearch client
 opensearch_client = OpenSearch(
     hosts=[OPENSEARCH_HOST],
@@ -58,6 +61,9 @@ opensearch_client = OpenSearch(
     verify_certs=True,
     connection_class=RequestsHttpConnection
 )
+
+# Configure the QuickSight client
+quicksight = boto3.client('quicksight', region_name=OPENSEARCH_REGION)
 
 @app.before_request
 def log_request_info():
@@ -98,7 +104,6 @@ def create_patient():
     db.session.commit()
     return jsonify({'message': 'Patient created successfully'}), 201
 
-# Define routes and other configurations
 @app.route('/patients', methods=['GET'])
 def get_patients():
     patients = Patient.query.all()
@@ -347,48 +352,66 @@ def upload_file():
         os.unlink(temp_filename)
         logging.debug(f"Temporary file removed: {temp_filename}")
 
-@app.route('/search', methods=['GET'])
-def search():
-    query = request.args.get('q')
-    if not query:
-        return jsonify({'error': 'No search query provided'}), 400
+# Create a route for generating an embed URL for a QuickSight dashboard
+@app.route('/quicksight-embed-url', methods=['GET'])
+def get_quicksight_embed_url():
+    dashboard_id = request.args.get('dashboard_id')
+    if not dashboard_id:
+        return jsonify({'error': 'Dashboard ID is required'}), 400
 
     try:
-        # Perform the search
-        search_response = opensearch_client.search(
-            index=OPENSEARCH_INDEX,
-            body={
-                'query': {
-                    'multi_match': {
-                        'query': query,
-                        'fields': ['text', 'type', 'category']
-                    }
+        response = quicksight.get_dashboard_embed_url(
+            AwsAccountId=AWS_ACCOUNT_ID,
+            DashboardId=dashboard_id,
+            IdentityType='IAM',
+            SessionLifetimeInMinutes=30,
+            UndoRedoDisabled=True,
+            ResetDisabled=True
+        )
+        return jsonify({'embed_url': response['EmbedUrl']})
+    except ClientError as e:
+        return jsonify({'error': str(e)}), 500
+
+# Create a route for creating a new QuickSight dashboard
+@app.route('/create-dashboard', methods=['POST'])
+def create_dashboard():
+    data = request.get_json()
+    dashboard_name = data['name']
+    dashboard_template_arn = data['templateArn']
+    dataset_references = data['datasetReferences']
+
+    try:
+        response = quicksight.create_dashboard(
+            AwsAccountId=AWS_ACCOUNT_ID,
+            DashboardId=str(uuid.uuid4()),  # Generate a unique dashboard ID
+            Name=dashboard_name,
+            SourceEntity={
+                'SourceTemplate': {
+                    'DataSetReferences': dataset_references,
+                    'Arn': dashboard_template_arn
+                }
+            },
+            VersionDescription='Initial version',
+            DashboardPublishOptions={
+                'AdHocFilteringOption': {
+                    'AvailabilityStatus': 'ENABLED'
+                },
+                'ExportToCSVOption': {
+                    'AvailabilityStatus': 'ENABLED'
+                },
+                'SheetControlsOption': {
+                    'VisibilityState': 'EXPANDED'
                 }
             }
         )
 
-        # Parse the search results
-        search_results = []
-        for hit in search_response['hits']['hits']:
-            result = {
-                'text': hit['_source']['text'],
-                'score': hit['_score']
-            }
-            search_results.append(result)
+        dashboard_id = response['DashboardId']
+        # Store the dashboard ID and other relevant information in your database
+        # Associate the dashboard with the user who created it
 
-        return jsonify({'results': search_results})
-
-    except Exception as e:
-        logging.error(f"Error performing search: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/patients/<int:patient_id>')
-def patient_profile(patient_id):
-    patient = Patient.query.get(patient_id)
-    if patient:
-        return render_template('patient_profile.html', patient=patient)
-    else:
-        return "Patient not found", 404
+        return jsonify({'status': 'success', 'dashboardId': dashboard_id}), 201
+    except ClientError as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 # Create tables based on models within the application context
 with app.app_context():
