@@ -1,4 +1,5 @@
 from database import db
+from datetime import datetime
 
 class Patient(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -35,3 +36,25 @@ class Entity(db.Model):
     score = db.Column(db.Float)
     category = db.Column(db.String(50))
     attributes = db.Column(db.JSON)
+
+class SequentialNumber(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    current_number = db.Column(db.Integer, default=1)
+
+class Dashboard(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    dashboard_id = db.Column(db.String(100), unique=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Dashboard {self.name}>'
+
+class DataSource(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    file_name = db.Column(db.String(100), nullable=False)
+    arn = db.Column(db.String(200), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<DataSource {self.file_name}>'

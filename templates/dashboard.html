@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard Building</title>
+    <!-- Include necessary CSS and JavaScript files -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Dashboard Building</h1>
+    <div id="dashboardList">
+        <!-- User's dashboards will be populated here -->
+    </div>
+    <div id="dashboardEmbed">
+        <!-- Embedded dashboard will be displayed here -->
+    </div>
+
+    <!-- Pass the dashboard_id from the server to the client -->
+    <script>
+        var dashboardId = '{{ dashboard_id }}';
+    </script>
+
+    <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>

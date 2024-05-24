@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Dashboard</title>
+    <!-- Include necessary CSS and JavaScript files -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Create Dashboard</h1>
+    <form id="createDashboardForm">
+        <label for="dashboardName">Dashboard Name:</label>
+        <input type="text" id="dashboardName" name="dashboardName" required>
+    
+        <button type="submit">Create Dashboard</button>
+    </form>
+
+    <script src="{{ url_for('static', filename='create_dashboard.js') }}"></script>
+</body>
+</html>

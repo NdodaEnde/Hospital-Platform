@@ -251,4 +251,78 @@ function populatePatientProfile(patientData) {
   document.getElementById('patient-upcoming-appointments').textContent = patientData.upcoming_appointments.join(', ') || 'Not available';
   document.getElementById('patient-past-visits').textContent = patientData.past_visits.join(', ') || 'Not available';
 }
+
+// Function to navigate to the dashboard page
+function navigateToDashboard(dashboardId) {
+  // Update the URL or redirect to the dashboard page with the dashboardId
+  window.location.href = `/dashboard?id=${dashboardId}`;
+}
+// Export data button click event
+document.getElementById('export-data-btn').addEventListener('click', async () => {
+  try {
+      const response = await fetch('/export-data', {
+          method: 'POST'
+      });
+
+      if (response.ok) {
+          const data = await response.json();
+          console.log('Data exported and uploaded to S3 successfully');
+          console.log('Data Source ARN:', data.data_source_arn);
+
+          // Create a new dashboard after exporting data
+          const dashboardName = 'New Dashboard';
+          const dashboardConfig = {
+              name: dashboardName
+          };
+
+          const createResponse = await fetch('/create-dashboard', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(dashboardConfig)
+          });
+
+          if (createResponse.ok) {
+              const createData = await createResponse.json();
+              const dashboardId = createData.dashboardId;
+              console.log('Dashboard created successfully. ID:', dashboardId);
+
+              // Navigate to the dashboard page or perform any other necessary actions
+          } else {
+              console.error('Error creating dashboard:', createResponse.statusText);
+          }
+      } else {
+          console.error('Error exporting data:', response.statusText);
+      }
+  } catch (error) {
+      console.error('Error exporting data:', error);
+  }
+});
+
+// Load QuickSight dashboard
+async function loadQuickSightDashboard() {
+  try {
+    const embedUrl = await getQuickSightEmbedUrl(dashboardId);
+    const quicksightDashboard = document.getElementById('quicksight-dashboard');
+    quicksightDashboard.innerHTML = `<iframe src="${embedUrl}" width="100%" height="600"></iframe>`;
+  } catch (error) {
+    console.error('Error loading QuickSight dashboard:', error);
+  }
+}
+// Function to fetch the embed URL for a QuickSight dashboard
+async function getQuickSightEmbedUrl(dashboardId) {
+  try {
+      const response = await fetch(`/quicksight-embed-url?dashboard_id=${dashboardId}`);
+      if (!response.ok) {
+          throw new Error('Failed to get QuickSight embed URL');
+      }
+      const data = await response.json();
+      return data.embed_url;
+  } catch (error) {
+      console.error('Error:', error);
+      throw error;
+  }
+}
+
 });

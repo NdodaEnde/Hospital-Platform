@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>Markmap</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+#mindmap {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.17.0/dist/style.css">
+</head>
+<body>
+<svg id="mindmap"></svg>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.8.5/dist/d3.min.js"></script><script src="https://cdn.jsdelivr.net/npm/markmap-view@0.17.0/dist/browser/index.js"></script><script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.17.0/dist/index.js"></script><script>(()=>{setTimeout(()=>{const{markmap:O,mm:h}=window,M=new O.Toolbar;M.attach(h);const oe=M.render();oe.setAttribute("style","position:absolute;bottom:20px;right:20px"),document.body.append(oe)})})()</script><script>((i,L,f,r)=>{const w=i();window.mm=w.Markmap.create("svg#mindmap",(L||w.deriveOptions)(r),f)})(()=>window.markmap,null,{"content":"Patient Record Digitization","children":[{"content":"Document Upload","children":[{"content":"Scan and Upload","children":[],"payload":{"lines":"3,4"}},{"content":"Store in S3","children":[],"payload":{"lines":"4,5"}}],"payload":{"lines":"2,3"}},{"content":"Data Extraction","children":[{"content":"Use Amazon Textract","children":[],"payload":{"lines":"7,8"}},{"content":"Identify Information","children":[],"payload":{"lines":"8,9"}}],"payload":{"lines":"6,7"}},{"content":"Data Validation &amp; Preprocessing","children":[{"content":"Validate Data","children":[],"payload":{"lines":"11,12"}},{"content":"Preprocess Data","children":[],"payload":{"lines":"12,13"}}],"payload":{"lines":"10,11"}},{"content":"Primary Storage","children":[{"content":"Store in Amazon S3","children":[],"payload":{"lines":"15,16"}}],"payload":{"lines":"14,15"}},{"content":"Data Storage","children":[{"content":"Store in Amazon RDS","children":[],"payload":{"lines":"18,19"}}],"payload":{"lines":"17,18"}},{"content":"Data Indexing &amp; Search","children":[{"content":"Index with OpenSearch","children":[],"payload":{"lines":"21,22"}}],"payload":{"lines":"20,21"}},{"content":"Analytics &amp; Visualization","children":[{"content":"Visualize with QuickSight","children":[],"payload":{"lines":"24,25"}}],"payload":{"lines":"23,24"}},{"content":"EHR Integration","children":[{"content":"API Integration","children":[],"payload":{"lines":"27,28"}},{"content":"Secure Data Transfer","children":[],"payload":{"lines":"28,29"}}],"payload":{"lines":"26,27"}},{"content":"Next Steps","children":[{"content":"Set Up S3 Buckets","children":[],"payload":{"lines":"31,32"}},{"content":"Configure Amazon RDS","children":[],"payload":{"lines":"32,33"}},{"content":"Set Up OpenSearch","children":[],"payload":{"lines":"33,34"}},{"content":"Integrate QuickSight","children":[],"payload":{"lines":"34,35"}},{"content":"Develop ETL Pipelines","children":[],"payload":{"lines":"35,36"}},{"content":"Implement EHR Integration","children":[],"payload":{"lines":"36,37"}}],"payload":{"lines":"30,31"}}],"payload":{"lines":"0,1"}},null)</script>
+</body>
+</html>

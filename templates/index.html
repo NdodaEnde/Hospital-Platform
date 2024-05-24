@@ -86,10 +86,15 @@
         
         <section id="analytics-dashboard">
             <h2>Analytics/Dashboard</h2>
+            <!-- Add a button or link for creating a new dashboard -->
+            <a href="{{ url_for('create_dashboard_page') }}" class="button">Create New Dashboard</a>
+            <button id="export-data-btn">Export Data</button>
+            <!-- Add a button or link for viewing the dashboard -->
+            <a href="{{ url_for('view_dashboard') }}" class="button">View Dashboard</a>
             <!-- QuickSight API integration will go here -->
             <div id="quicksight-dashboard"></div>
         </section>
     </main>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
-</html> 
+</html>

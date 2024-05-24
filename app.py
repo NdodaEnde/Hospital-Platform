@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from models import Patient, Entity
@@ -10,7 +10,6 @@ import tempfile
 import os
 from pathlib import Path
 from flask_cors import CORS
-from flask import render_template
 import json
 from datetime import datetime
 from pathlib import Path
@@ -20,17 +19,17 @@ from opensearchpy import OpenSearch, RequestsHttpConnection
 from flask_migrate import Migrate
 import uuid
 from botocore.exceptions import ClientError
+import csv
+from io import StringIO
+from models import SequentialNumber
+from models import Dashboard
+from models import DataSource
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 textract = boto3.client('textract')
 comprehend_medical = boto3.client('comprehendmedical')
-
-print(f"OPENSEARCH_HOST: {os.environ.get('OPENSEARCH_HOST')}")
-print(f"OPENSEARCH_INDEX: {os.environ.get('OPENSEARCH_INDEX')}")
-print(f"OPENSEARCH_REGION: {os.environ.get('OPENSEARCH_REGION')}")
-print(f"OPENSEARCH_SERVICE: {os.environ.get('OPENSEARCH_SERVICE')}")
 
 app = Flask(__name__)
 CORS(app)
@@ -73,11 +72,24 @@ def log_request_info():
 def index():
     return render_template('index.html')
 
-from flask import send_from_directory
-
 @app.route('/static/<path:path>')
 def send_static(path):
     return send_from_directory('static', path, conditional=True)
+
+@app.route('/dashboard', endpoint='view_dashboard')
+def view_dashboard():
+    dashboard_name = request.args.get('name')  # Retrieve the dashboard name from the request parameters
+    dashboard = Dashboard.query.filter_by(name=dashboard_name).first()
+
+    if dashboard:
+        dashboard_id = dashboard.dashboard_id
+        return render_template('dashboard.html', dashboard_id=dashboard_id)
+    else:
+        return "Dashboard not found", 404
+
+@app.route('/create-dashboard', methods=['GET'], endpoint='create_dashboard_page')
+def create_dashboard_page():
+    return render_template('create_dashboard.html')
 
 @app.route('/patients', methods=['POST'])
 def create_patient():
@@ -196,6 +208,14 @@ def get_patient(patient_id):
         return jsonify(patient_data)
     else:
         return jsonify({'message': 'Patient not found'}), 404
+
+@app.route('/patient-profile/<int:patient_id>')
+def patient_profile(patient_id):
+    patient = Patient.query.get(patient_id)
+    if patient:
+        return render_template('patient_profile.html', patient=patient)
+    else:
+        return "Patient not found", 404
 
 @app.route('/patients/<int:patient_id>', methods=['PUT'])
 def update_patient(patient_id):
@@ -373,461 +393,163 @@ def get_quicksight_embed_url():
         return jsonify({'error': str(e)}), 500
 
 # Create a route for creating a new QuickSight dashboard
-@app.route('/create-dashboard', methods=['POST'])
+from models import DataSource
+
+@app.route('/create-dashboard', methods=['POST'], endpoint='create_dashboard')
 def create_dashboard():
     data = request.get_json()
     dashboard_name = data['name']
-    dashboard_template_arn = data['templateArn']
-    dataset_references = data['datasetReferences']
 
     try:
-        response = quicksight.create_dashboard(
-            AwsAccountId=AWS_ACCOUNT_ID,
-            DashboardId=str(uuid.uuid4()),  # Generate a unique dashboard ID
-            Name=dashboard_name,
-            SourceEntity={
-                'SourceTemplate': {
-                    'DataSetReferences': dataset_references,
-                    'Arn': dashboard_template_arn
-                }
-            },
-            VersionDescription='Initial version',
-            DashboardPublishOptions={
-                'AdHocFilteringOption': {
-                    'AvailabilityStatus': 'ENABLED'
-                },
-                'ExportToCSVOption': {
-                    'AvailabilityStatus': 'ENABLED'
-                },
-                'SheetControlsOption': {
-                    'VisibilityState': 'EXPANDED'
-                }
-            }
-        )
+        # Retrieve the most recent data source from the database
+        data_source = DataSource.query.order_by(DataSource.created_at.desc()).first()
 
-        dashboard_id = response['DashboardId']
-        # Store the dashboard ID and other relevant information in your database
-        # Associate the dashboard with the user who created it
+        if data_source:
+            data_source_arn = data_source.arn
 
-        return jsonify({'status': 'success', 'dashboardId': dashboard_id}), 201
+            response = quicksight.create_dashboard(
+                AwsAccountId=AWS_ACCOUNT_ID,
+                DashboardId=str(uuid.uuid4()),
+                Name=dashboard_name,
+                SourceEntity={
+                    'SourceTemplate': {
+                        'DataSetReferences': [
+                            {
+                                'DataSetPlaceholder': 'patient_data_dataset',
+                                'DataSetArn': data_source_arn
+                            }
+                        ]
+                    }
+                },
+                VersionDescription='Initial version',
+                DashboardPublishOptions={
+                    'AdHocFilteringOption': {
+                        'AvailabilityStatus': 'ENABLED'
+                    },
+                    'ExportToCSVOption': {
+                        'AvailabilityStatus': 'ENABLED'
+                    },
+                    'SheetControlsOption': {
+                        'VisibilityState': 'EXPANDED'
+                    }
+                }
+            )
+
+            dashboard_id = response['DashboardId']
+            dashboard = Dashboard(
+                name=dashboard_name,
+                dashboard_id=dashboard_id
+            )
+            db.session.add(dashboard)
+            db.session.commit()
+
+            return jsonify({'status': 'success', 'dashboardId': dashboard_id}), 201
+        else:
+            return jsonify({'status': 'error', 'message': 'No data source found'}), 404
+
     except ClientError as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-# Create tables based on models within the application context
-with app.app_context():
-    db.create_all()
-
-if __name__ == '__main__':
-    app.run()
-"""
-if __name__ == '__main__':
-    app.run(debug=True)
-
-import logging
-from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-from models import Patient
-from database import db, init_app
-from werkzeug.utils import secure_filename
-import boto3
-import tempfile
-import os
-from pathlib import Path
-from flask_cors import CORS
-from flask import render_template
-import json
-from pathlib import Path
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-
-textract = boto3.client('textract')
-comprehend_medical = boto3.client('comprehendmedical')
-
-app = Flask(__name__)
-CORS(app) 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-init_app(app)
-
-# Import models after creating app and db
-from models import Patient
-@app.before_request
-def log_request_info():
-    logging.debug(f"Received request: {request.method} {request.path}")
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-from flask import send_from_directory
-
-@app.route('/static/<path:path>')
-def send_static(path):
-    return send_from_directory('static', path, conditional=True)
-
-# Define routes and other configurations
-@app.route('/patients', methods=['GET'])
-def get_patients():
+# Add a new route for exporting data to CSV and uploading to S3
+@app.route('/export-data', methods=['POST'])
+def export_data():
     try:
+        # Retrieve patient data from the database
         patients = Patient.query.all()
-        output = []
+
+        # Create a StringIO object to store the CSV data
+        csv_data = StringIO()
+        writer = csv.writer(csv_data)
+
+        # Write the header row
+        writer.writerow(['Name', 'Date of Birth', 'Gender', 'Unique ID', 'Conditions', 'Surgeries', 'Allergies', 'Medications', 'Family History', 'Blood Pressure', 'Heart Rate', 'Temperature', 'Height', 'Weight', 'BMI', 'Documents', 'Upcoming Appointments', 'Past Visits'])
+
+        # Write patient data to the CSV
         for patient in patients:
-            patient_data = {'id': patient.id, 'name': patient.name, 'date_of_birth': patient.date_of_birth}
-            output.append(patient_data)
-        return jsonify({'patients': output})
-    except Exception as e:
-        logging.error(f"Error retrieving patients: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+            writer.writerow([patient.name, patient.date_of_birth, patient.gender, patient.unique_id, ...])
 
-@app.route('/upload', methods=['POST'])
+        # Generate a unique file name for the CSV file
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        sequential_number = get_next_sequential_number()
+        file_name = f'patient_data_{timestamp}_{sequential_number:04d}.csv'
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    logging.debug("upload_file function called")
+        # Upload the CSV data to S3
+        s3 = boto3.client('s3')
+        s3.put_object(Body=csv_data.getvalue(), Bucket='hospital-patients-records-bucket', Key=file_name)
 
-    file = request.files.get('file')
-    if not file:
-        logging.error("No file provided")
-        return jsonify({'error': 'No file provided'}), 400
-
-    if file.filename == '':
-        logging.error("No file selected")
-        return jsonify({'error': 'No file selected'}), 400
-
-    logging.debug(f"Received file: {file.filename}")
-
-    # Get the project directory path
-    project_dir = Path(__file__).resolve().parent
-    logging.debug(f"Project directory: {project_dir}")
-
-    # Save the file to a temporary location in the project directory
-    try:
-        with tempfile.NamedTemporaryFile(dir=str(project_dir), delete=False) as temp_file:
-            file.save(temp_file.name)
-            temp_filename = temp_file.name
-            logging.debug(f"Temporary file created: {temp_filename}")
-
-            # Inspect the uploaded file
-            with open(temp_filename, 'rb') as temp_file:
-                file_contents = temp_file.read()
-                logging.debug(f"File contents (truncated): {file_contents[:50]}...")
-
-        try:
-            # Extract text from the PDF file using Amazon Textract
-            logging.debug(f"Calling Textract with file: {temp_filename}")
-            with open(temp_filename, 'rb') as file:
-                response = textract.detect_document_text(
-                    Document={'Bytes': file.read()}
-                )
-            logging.debug(f"Textract response: {response}")
-
-            text = ''
-            for item in response['Blocks']:
-                if item['BlockType'] == 'LINE':
-                    text += item['Text'] + '\n'
-
-            # Analyze the extracted text using Comprehend Medical
-            logging.debug("Calling Comprehend Medical...")
-            medical_response = comprehend_medical.detect_entities(
-                Text=text
-            )
-            logging.debug(f"Comprehend Medical response: {medical_response}")
-
-            # Parse the Comprehend Medical response
-            entities = []
-            for entity in medical_response['Entities']:
-                entity_data = {
-                    'type': entity['Type'],
-                    'text': entity['Text'],
-                    'score': entity['Score'],
-                    'category': entity['Category'],
-                    'attributes': entity.get('Attributes', [])
+        # Create a manifest file
+        manifest = {
+            "fileLocations": [
+                {
+                    "URIs": [
+                        f"s3://hospital-patients-records-bucket/{file_name}"
+                    ]
                 }
-                entities.append(entity_data)
+            ],
+            "globalUploadSettings": {
+                "format": "CSV",
+                "delimiter": ",",
+                "textqualifier": "'",
+                "containsHeader": "true"
+            }
+        }
 
-            # Save entities to a JSON file
-            entities_file = project_dir / 'entities.json'
-            with open(entities_file, 'w') as f:
-                json.dump(entities, f, indent=2)
+        # Upload the manifest file to S3
+        manifest_file_name = f'manifest_{timestamp}_{sequential_number:04d}.json'
+        s3.put_object(Body=json.dumps(manifest), Bucket='hospital-patients-records-bucket', Key=manifest_file_name)
 
-            # Return the extracted text and entities
-            return jsonify({'text': text, 'entities': entities})
+        # Create a data source in QuickSight using the manifest file
+        quicksight = boto3.client('quicksight')
+        response = quicksight.create_data_source(
+            AwsAccountId=AWS_ACCOUNT_ID,
+            DataSourceId=str(uuid.uuid4()),
+            Name='Patient Data',
+            Type='S3',
+            DataSourceParameters={
+                'S3Parameters': {
+                    'ManifestFileLocation': {
+                        'Bucket': 'hospital-patients-records-bucket',
+                        'Key': manifest_file_name
+                    }
+                }
+            }
+        )
+        data_source_arn = response['Arn']
 
-        except Exception as e:
-            logging.error(f"Error processing file: {str(e)}")
-            return jsonify({'error': str(e)}), 500
+        return jsonify({'message': 'Data exported and uploaded to S3 successfully', 'data_source_arn': data_source_arn}), 200
 
     except Exception as e:
-        logging.error(f"Error creating temporary file: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-    finally:
-        # Remove the temporary file
-        os.unlink(temp_filename)
-        logging.debug(f"Temporary file removed: {temp_filename}")
-"""
-'''
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    logging.debug("upload_file function called")
-
-    file = request.files.get('file')
-    if not file:
-        logging.error("No file provided")
-        return jsonify({'error': 'No file provided'}), 400
-
-    if file.filename == '':
-        logging.error("No file selected")
-        return jsonify({'error': 'No file selected'}), 400
-
-    logging.debug(f"Received file: {file.filename}")
-
-    # Get the project directory path
-    project_dir = Path(__file__).resolve().parent
-    logging.debug(f"Project directory: {project_dir}")
-
-    # Save the file to a temporary location in the project directory
+# Add a new route for listing data sources in QuickSight
+@app.route('/list-data-sources', methods=['GET'])
+def list_data_sources():
     try:
-        with tempfile.NamedTemporaryFile(dir=str(project_dir), delete=False) as temp_file:
-            file.save(temp_file.name)
-            temp_filename = temp_file.name
-            logging.debug(f"Temporary file created: {temp_filename}")
-
-            # Inspect the uploaded file
-            with open(temp_filename, 'rb') as temp_file:
-                file_contents = temp_file.read()
-                logging.debug(f"File contents (truncated): {file_contents[:50]}...")
-
-        try:
-            # Extract text from the PDF file using Amazon Textract
-            logging.debug(f"Calling Textract with file: {temp_filename}")
-            with open(temp_filename, 'rb') as file:
-                response = textract.detect_document_text(
-                    Document={'Bytes': file.read()}
-                )
-            logging.debug(f"Textract response: {response}")
-
-            text = ''
-            for item in response['Blocks']:
-                if item['BlockType'] == 'LINE':
-                    text += item['Text'] + '\n'
-
-            # Analyze the extracted text using Comprehend Medical
-            logging.debug("Calling Comprehend Medical...")
-            medical_response = comprehend_medical.detect_entities(
-                Text=text
-            )
-            logging.debug(f"Comprehend Medical response: {medical_response}")
-
-            # Return the extracted text
-            return jsonify({'text': text})
-
-        except Exception as e:
-            logging.error(f"Error processing file: {str(e)}")
-            return jsonify({'error': str(e)}), 500
+        quicksight = boto3.client('quicksight')
+        response = quicksight.list_data_sources(
+            AwsAccountId=AWS_ACCOUNT_ID
+        )
+        data_sources = response['DataSources']
+        return jsonify({'data_sources': data_sources}), 200
 
     except Exception as e:
-        logging.error(f"Error creating temporary file: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-    finally:
-        # Remove the temporary file
-        os.unlink(temp_filename)
-        logging.debug(f"Temporary file removed: {temp_filename}")
-'''
+def get_next_sequential_number():
+    # Retrieve the current sequential number from the database
+    sequential_number = SequentialNumber.query.first()
 
-'''
-def upload_file():
-    # Get the uploaded file
-    logging.debug(f"Request data: {request.data}")
-    logging.debug(f"Request files: {request.files}")
-    file = request.files['file']
-    logging.debug(f"Received file: {file.filename}")
+    if sequential_number is None:
+        # If no sequential number exists in the database, create a new one
+        sequential_number = SequentialNumber(current_number=1)
+        db.session.add(sequential_number)
+    else:
+        # Increment the current sequential number
+        sequential_number.current_number += 1
 
-    # Get the project directory path
-    project_dir = Path(__file__).resolve().parent
-    logging.debug(f"Project directory: {project_dir}")
+    db.session.commit()
 
-    # Save the file to a temporary location in the project directory
-    with tempfile.NamedTemporaryFile(dir=str(project_dir), delete=False) as temp_file:
-        file.save(temp_file.name)
-        temp_filename = temp_file.name
-        logging.debug(f"Temporary file created: {temp_filename}")
-
-    try:
-        # Extract text from the PDF file using Amazon Textract
-        with open(temp_filename, 'rb') as file:
-            logging.debug(f"Calling Textract with file: {temp_filename}")
-            response = textract.detect_document_text(
-                Document={'Bytes': file.read()}
-            )
-            logging.debug(f"Textract response: {response}")
-
-        text = ''
-        for item in response['Blocks']:
-            if item['BlockType'] == 'LINE':
-                text += item['Text'] + '\n'
-
-        # Analyze the extracted text using Comprehend Medical
-        medical_response = comprehend_medical.detect_entities(
-            Text=text
-        )
-        logging.debug(f"Comprehend Medical response: {medical_response}")
-
-        # Return the extracted text
-        return {'text': text}
-
-    except Exception as e:
-        logging.error(f"Error processing file: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-    finally:
-        # Remove the temporary file
-        os.unlink(temp_filename)
-        logging.debug(f"Temporary file removed: {temp_filename}")
-'''
-# Create tables based on models within the application context
-with app.app_context():
-    db.create_all()
-
-if __name__ == '__main__':
-    app.run()
-
-
-"""
-from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
-from flask_marshmallow import Marshmallow
-from models import Patient
-from database import db, init_app
-from werkzeug.utils import secure_filename
-import boto3
-import tempfile
-import os
-
-textract = boto3.client('textract')
-comprehend_medical = boto3.client('comprehendmedical')
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-init_app(app)
-
-# Import models after creating app and db
-from models import Patient
-
-# Define routes and other configurations
-@app.route('/patients', methods=['GET'])
-def get_patients():
-    try:
-        patients = Patient.query.all()
-        output = []
-        for patient in patients:
-            patient_data = {'id': patient.id, 'name': patient.name, 'date_of_birth': patient.date_of_birth}
-            output.append(patient_data)
-        return jsonify({'patients': output})
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500  # Return a 500 Internal Server Error with the error message
-
-from pathlib import Path
-
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    # Get the uploaded file
-    file = request.files['file']
-
-    # Get the project directory path
-    project_dir = Path(__file__).resolve().parent
-
-    # Save the file to a temporary location in the project directory
-    with tempfile.NamedTemporaryFile(dir=str(project_dir), delete=False) as temp_file:
-        file.save(temp_file.name)
-        temp_filename = temp_file.name
-
-    try:
-        # Extract text from the PDF file using Amazon Textract
-        with open(temp_filename, 'rb') as file:
-            response = textract.detect_document_text(
-                Document={'Bytes': file.read()}
-            )
-
-        text = ''
-        for item in response['Blocks']:
-            if item['BlockType'] == 'LINE':
-                text += item['Text'] + '\n'
-
-        # Analyze the extracted text using Comprehend Medical
-        medical_response = comprehend_medical.detect_entities(
-            Text=text
-        )
-
-        # Return the extracted text
-        return {'text': text}
-
-    finally:
-        # Remove the temporary file
-        os.unlink(temp_filename)
-
-
-
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    # Get the uploaded file
-    file = request.files['file']
-
-    # Save the file to a temporary location
-    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-        file.save(temp_file.name)
-        temp_filename = temp_file.name
-
-    try:
-        # Extract text from the PDF file using Amazon Textract
-        with open(temp_filename, 'rb') as file:
-            response = textract.detect_document_text(
-                Document={'Bytes': file.read()}
-            )
-
-        text = ''
-        for item in response['Blocks']:
-            if item['BlockType'] == 'LINE':
-                text += item['Text'] + '\n'
-
-        # Analyze the extracted text using Comprehend Medical
-        medical_response = comprehend_medical.detect_entities(
-            Text=text
-        )
-
-        # Return the extracted text
-        return {'text': text}
-
-    finally:
-        # Remove the temporary file
-        os.unlink(temp_filename)
-
-
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    # Get the uploaded file
-    file = request.files['file']
-    # Secure the filename
-    filename = secure_filename(file.filename)
-    # Save the file to a temporary location
-    file.save(filename)
-    # Extract text from the PDF file using Amazon Textract
-    with open(filename, 'rb') as file:
-        response = textract.detect_document_text(
-            Document={'Bytes': file.read()}
-        )
-        text = ''
-        for item in response['Blocks']:
-            if item['BlockType'] == 'LINE':
-                text += item['Text'] + '\n'
-    # Analyze the extracted text using Comprehend Medical
-    medical_response = comprehend_medical.detect_entities(
-        Text=text
-    )
-
-    # Return the extracted text
-    return {'text': text}
+    return sequential_number.current_number
 
 # Create tables based on models within the application context
 with app.app_context():
@@ -835,4 +557,3 @@ with app.app_context():
 
 if __name__ == '__main__':
     app.run()
-"""
